@@ -1,0 +1,347 @@
+:root {
+    --col-grey-rest: #cdcdcd;
+    --col-today: #fff3bf;
+    --col-event: #f7dab5;
+    --col-event-left: #8d2619;
+    --col-event-hover: #d7450b;
+    --col-days:#b83100;
+    --col-name-month: #fc9656;
+    --col-other-days: #e8e8e8;
+    --col-btn-inside: #ffeee6;
+  }
+  .p{
+    font-family: "Amatic SC";
+    font-weight: 400;
+    font-style: normal;
+  }
+  .amatic-sc-regular {
+    font-family: "Amatic SC", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .amatic-sc-bold {
+    font-family: "Amatic SC", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  .caveat {
+    font-family: "Caveat", cursive;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+  
+body {
+    font-family: "Caveat", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.3em;
+    background-color: #f8f9fa;
+    background-image: url('../img/mask.png');
+}
+
+a {
+    color:var(--col-days);
+}
+.card {
+    transition: transform 0.2s;
+    height: 100%;
+    margin-bottom: 20px;
+}
+.card-title{
+    font-size: 2.5em;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
+}
+
+.navbar {
+    margin-bottom: 30px;
+}
+
+.performance-image {
+    max-height: 500px;
+    object-fit: contain;
+}
+/*-------------------------------------------------------*/
+/*-------------------------КНОПКИ------------------------*/
+/*-------------------------------------------------------*/
+.btn-action {
+    margin-right: 5px;
+}
+
+.card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.btn, .page-link
+{
+    display: flex;
+    color: var(--col-days);
+    background-color: var(--col-btn-inside);
+    border-color: var(--col-days);
+    justify-content: center;
+}
+
+.btn:hover, .page-link
+{
+    color: white;
+    background-color: var(--col-event-hover);
+    border-color: var(--col-event-left);
+}
+
+.btn:active{
+    color: white;
+    background-color: var(--col-event-left) !important;
+    border-color: var(--col-event-left) !important;
+    transform: translateY(1px);
+}
+
+.page-link:active{
+    color: var(--col-event-left);
+}
+
+.alert.alert-info{
+    background-color: var(--col-btn-inside);
+    border-color: var(--col-event-left);
+    color: var(--col-event-left);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--col-event-left);
+    border-color: var(--col-event-left);
+    color: var(--col-btn-inside);
+}
+.pagination .page-item:not(.active) .page-link:hover {
+    color: var(--col-event-left) !important;
+}
+
+
+.pagination .page-item.focus .page-link {
+    color: var(--col-event-left);
+}
+/*.btn-outline-primary кнопки*/
+/*.btn.btn-primary.w-100 кнопка фильтровать*/
+/*Кнопка Сбросить .btn.btn-outline-secondary.w-100}*/
+
+.row{
+    display: flex;
+    justify-content: center;
+}
+
+.mt-4{
+    background: linear-gradient(to bottom, #ddb9aff6, #f6c39c);
+    min-height: 100vh;
+    padding: 10px;
+    border-radius: 15px;
+}
+.navbar-text{
+}
+.nav-item{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#div_id_text > label {
+    display: none;
+}
+.red-color-footer{
+    color: var(--col-days);
+}
+/*-------------------------------------------------------*/
+/*                    Календарь                          */
+/*-------------------------------------------------------*/
+.calendar {
+    width: 100%;
+    table-layout: fixed;
+}
+.card div text{
+    color:#dec0f7;
+    align-items: center;
+}
+
+/* Основные стили календаря */
+.month {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    table-layout: fixed;
+}
+
+.month th {
+    text-align: center;
+    padding: 10px;
+    background-color: var(--col-name-month);
+    border: 4px solid var(--col-other-days);
+    font-weight: normal;
+}
+
+.month td {
+    height: 100px;
+    vertical-align: top;
+    padding: 5px;
+    border: 1px solid #0b0014;
+    position: relative;
+}
+
+/* Дни из других месяцев */
+.month td.noday {
+    background-color: var(--col-other-days);
+    border: none;
+}
+
+/* Заголовок месяца */
+.month th.month {
+    padding: 15px;
+    background-color: var(--col-name-month);
+    font-weight: bold;
+}
+
+/* Дни недели */
+.month th.mon,
+.month th.tue,
+.month th.wed,
+.month th.thu,
+.month th.fri,
+.month th.sat,
+.month th.sun {
+    font-weight: bold;
+    color: var(--col-days);
+}
+
+/* Стили для событий */
+.day-number {
+    font-weight: bold;
+    margin-bottom: 3px;
+    text-align: left;
+    padding-right: 5px;
+}
+
+.day-events {
+    max-height: 80px;
+    overflow-y: auto;
+    font-size: 0.5em;
+    scrollbar-width: thin;
+}
+
+.day-events::-webkit-scrollbar {
+    width: 3px;
+}
+
+.day-events::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 4px;
+}
+
+/*Цвет события*/
+.event-item {
+    margin: 2px 0;
+    padding: 4px;
+    background-color: var(--col-event);
+    border-radius: 4px;
+    border-left: 4px solid var(--col-event-left);
+}
+
+.event-link {
+    color: black;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-link:hover {
+    text-decoration: underline;
+    color: var(--col-event-hover);
+}
+.month td{
+    border: 4px solid var(--col-other-days) !important;
+}
+
+/* Дополнительные стили для выходных */
+.month td.sun,
+.month td.sat {
+    background-color: var(--col-grey-rest);
+}
+
+/* Подсветка текущего дня */
+.month td.current-day {
+    background-color: var(--col-today);
+}
+
+@media (max-width: 768px) {
+    .month td {
+        height: 70px;
+        font-size: 0.9em;
+    }
+    /*Как вариант можно скрыть события если слишком мелко*/
+    .day-events {
+        /*display: none;*/
+        font-size: 0.5em;
+    }
+}
+/*-------------------------------------*/
+/*template_form.html*/
+/*-------------------------------------*/
+.card {
+    border-radius: 10px;
+    border: none;
+
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.no-move:hover
+{
+    transform: none;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-group .btn i {
+    font-size: 0.875rem;
+}
+
+.img-fluid {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.col-12{
+    margin-bottom: 15px;
+}
+/*-------------------------------------*/
+/*performance_detail.html*/
+/*-------------------------------------*/
+.comment {
+    transition: background-color 0.2s;
+}
+.comment:hover {
+    background-color: rgba(0, 0, 0, 0.093);
+}
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+img.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+/*допы для формитирования регистрации и входа в систему*/
+.form-group{
+    margin-bottom: 20px;
+}

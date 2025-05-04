@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Театральная афиша</h1>
+    
+    <!-- Фильтры -->
+    <div class="card no-move mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Основные фильтры -->
+                <div class="col-md-3">
+                    <label for="genre" class="form-label">Жанр</label>
+                    <select id="genre" name="genre" class="form-select">
+                        <option value="">Все жанры</option>
+                        {% for value, label in genre_choices %}
+                            <option value="{{ value }}" 
+                                {% if request.GET.genre == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="min_age" class="form-label">Возраст до</label>
+                    <input type="number" id="min_age" name="min_age" 
+                           class="form-control" value="{{ current_filters.min_age }}"
+                           min="0" max="18">
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="theater" class="form-label">Театр</label>
+                    <select id="theater" name="theater" class="form-select">
+                        <option value="">Все театры</option>
+                        {% for theater in theaters %}
+                            <option value="{{ theater.id }}"
+                                {% if request.GET.theater == theater.id|stringformat:"s" %}selected{% endif %}>
+                                {{ theater.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Кнопки -->
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Фильтровать
+                    </button>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="{% url 'affiche:index' %}" class="btn btn-outline-secondary w-100">
+                        Сбросить
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Список постановок -->
+    <div class="row">
+        {% for performance in performances %}
+        <div class="col-12 mb-4">
+            {% include "affiche/template_form.html" with performance=performance %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Нет доступных представлений.
+                <a href="{% url 'affiche:index' %}" class="alert-link">
+                    Показать все
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Пагинация -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    &laquo;
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page={{ num }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    {{ num }}
+                </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

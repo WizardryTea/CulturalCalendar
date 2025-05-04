@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Календарь событий</h1>
+        <div class="btn-group">
+            <a href="?year={{ prev_month.year }}&month={{ prev_month.month }}" 
+               class="btn btn-outline-primary">
+               ⮪</i> {{ prev_month_name }}
+            </a>
+            <a href="?year={{ next_month.year }}&month={{ next_month.month }}" 
+               class="btn btn-outline-primary">
+                {{ next_month_name }} ⮫</i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="card no-move shadow-sm mb-4">
+        <div class="card-body">
+            {{ calendar|safe }}
+        </div>
+    </div>
+    
+    <h2 class="mb-4">{{ current_month }}</h2>
+    
+    <div class="row">
+        {% for performance in performances %}
+        <div class="col-12">
+            {% include "affiche/template_form.html" with performance=performance %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                В этом месяце нет постановок.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Карточка с основной информацией о постановке -->
+    <div class="card shadow-sm mb-4">
+        <!-- Изображение по центру -->
+        <div class="text-center p-3">
+            {% if performance.image_url %}
+                <img src="{{ performance.image_url }}" 
+                     class="img-fluid rounded" 
+                     alt="{{ performance.title }}"
+                     style="max-height: 400px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'img/nophoto.png' %}" 
+                     class="img-fluid rounded" 
+                     alt="{{ performance.title }}"
+                     style="max-height: 400px; object-fit: cover;">
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center">
+                    <h1 class="h3 mb-0">{{ performance.title }}</h1>
+                    {% if performance.is_premiere %}
+                    <span class="badge bg-warning text-dark ms-2">Премьера</span>
+                    {% endif %}
+                </div>
+                {% if user.is_staff %}
+                <div class="btn-group">
+                    <a href="{% url 'affiche:performance_update' performance.pk %}" 
+                       class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'affiche:performance_delete' performance.pk %}" 
+                       class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Основная информация -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            <!--<strong>Дата:</strong> {{ performance.date|date:"d F Y" }} в {{ performance.date|time:"H:i" }}-->
+                            <strong>Дата:</strong>{{ performance.formatted_date }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-building me-2"></i>
+                            <strong>Театр:</strong> {{ performance.theater.name }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            <strong>Сцена:</strong> {{ performance.theater.stage|default:"Основная сцена" }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-clock me-2"></i>
+                            <span>Длительность:
+                                {{ performance.duration_display }}
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-person-badge me-2"></i>
+                            <strong>Возраст:</strong> {{ performance.min_age }}+
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-tag me-2"></i>
+                            <strong>Жанр:</strong> {{ performance.get_genre_display }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Дополнительная информация -->
+            {% if performance.source_url %}
+            <div class="mb-3">
+                <i class="bi bi-link-45deg me-2"></i>
+                <strong>Источник:</strong> 
+                <a href="{{ performance.source_url }}" target="_blank">Ссылка</a>
+            </div>
+            {% endif %}
+
+            <!-- Описание -->
+            {% if performance.description %}
+            <div class="mb-4">
+                <h5 class="border-bottom pb-2">Описание</h5>
+                <p>{{ performance.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Актеры и создатели -->
+            <div class="row">
+                {% if performance.actors.all %}
+                <div class="col-md-6 mb-3">
+                    <h5 class="border-bottom pb-2">Актеры</h5>
+                    <ul class="list-unstyled">
+                        {% for actor in performance.actors.all %}
+                        <li class="mb-1">
+                            <i class="bi bi-person-fill me-2"></i>
+                            {{ actor.name }} <small>({{ actor.role }})</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% if performance.crew.all %}
+                <div class="col-md-6 mb-3">
+                    <h5 class="border-bottom pb-2">Создатели</h5>
+                    <ul class="list-unstyled">
+                        {% for member in performance.crew.all %}
+                        <li class="mb-1">
+                            <i class="bi bi-person-workspace me-2"></i>
+                            {{ member.name }} <small>({{ member.role }})</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок комментариев -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-chat-square-text me-2"></i>
+                Комментарии <span class="badge bg-secondary rounded-pill">{{ performance.comment_count }}</span>
+            </h5>
+        </div>
+        
+        <div class="card-body">
+            <!-- Форма добавления комментария -->
+            {% if user.is_authenticated %}
+            <div class="mb-4 p-3 bg-light rounded">
+                <form method="post" action="{% url 'affiche:comment_create' performance.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        {{ comment_form.text|as_crispy_field }}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-send me-1"></i>Отправить
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-4">
+                <i class="bi bi-info-circle me-2"></i>
+                Чтобы оставить комментарий, пожалуйста, 
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">войдите</a> 
+                или 
+                <a href="{% url 'accounts:signup' %}" class="alert-link">зарегистрируйтесь</a>.
+            </div>
+            {% endif %}
+            
+            <!-- Список комментариев -->
+            <div class="comments">
+                {% for comment in comments %}
+                <div class="comment mb-3">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0 me-2">
+                            <div class="avatar-placeholder rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold">{{ comment.author.username }}</span>
+                                <small class="text-muted">
+                                    {{ comment.created_at|date:"d.m.Y H:i" }}
+                                    {% if comment.created_at != comment.updated_at %}
+                                    <span class="text-muted ms-1">(ред.)</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <p class="mb-2">{{ comment.text }}</p>
+                            {% if comment.can_edit %}
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'affiche:comment_update' comment.id %}" 
+                                   class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-pencil me-1"></i>Редактировать
+                                </a>
+                                <a href="{% url 'affiche:comment_delete' comment.id %}" 
+                                   class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash me-1"></i>Удалить
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if not forloop.last %}<hr class="my-2">{% endif %}
+                {% empty %}
+                <div class="text-center py-3 text-muted">
+                    <i class="bi bi-chat-square-text fs-1"></i>
+                    <p class="mt-2">Пока нет комментариев. Будьте первым!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
