@@ -10,7 +10,7 @@ from django.forms import inlineformset_factory
 import calendar
 from datetime import datetime, date, timedelta
 from django.http import Http404
-
+from django.utils import timezone
 
 class RussianHTMLCalendar(calendar.HTMLCalendar):
     def __init__(self):
@@ -44,10 +44,10 @@ class RussianHTMLCalendar(calendar.HTMLCalendar):
 
 class CalendarView(generic.TemplateView):
     template_name = 'affiche/calendar.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         now = datetime.now()
         
         try:
@@ -131,6 +131,7 @@ class CalendarView(generic.TemplateView):
         })
         return context
 
+
 class PerformanceListView(generic.ListView):
     model = Performance
     template_name = 'affiche/index.html'
@@ -180,6 +181,7 @@ class PerformanceListView(generic.ListView):
         }
         return context
 
+
 class PerformanceDetailView(generic.DetailView):
     model = Performance
     template_name = 'affiche/performance_detail.html'
@@ -193,6 +195,7 @@ class PerformanceDetailView(generic.DetailView):
             comment.can_edit = comment.can_edit(self.request.user)
         context['comments'] = comments
         return context
+
 
 class PerformanceCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     model = Performance
@@ -215,6 +218,7 @@ class PerformanceCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
         print("Form errors:", form.errors)
         return super().form_invalid(form)
 
+
 class PerformanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Performance
     form_class = PerformanceForm
@@ -227,6 +231,7 @@ class PerformanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.Upd
         self.object = form.save()
         return redirect(self.object.get_absolute_url())
 
+
 class PerformanceDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     model = Performance
     template_name = 'affiche/performance_confirm_delete.html'
@@ -235,6 +240,7 @@ class PerformanceDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.Del
     def test_func(self):
         return self.request.user.is_staff
 
+
 def scrape_performances(request):
     if request.user.is_authenticated and request.user.is_admin():
         from .utils import scrape_teatrarmii
@@ -242,6 +248,7 @@ def scrape_performances(request):
         return redirect('affiche:index')
     else:
         return redirect('accounts:login')
+
 
 class CommentCreateView(LoginRequiredMixin, generic.CreateView):
     model = Comment

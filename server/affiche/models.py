@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import datetime, time
 from django.utils.translation import gettext_lazy as _
 
+
 class Theater(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название театра")
     website = models.URLField(verbose_name="Ссылка")
@@ -18,6 +19,7 @@ class Theater(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Performance(models.Model):
     title = models.CharField(
@@ -59,7 +61,7 @@ class Performance(models.Model):
     def duration_display(self):
         if not self.duration:
             return "неизвестно"
-        # если это строка, то преобразуем в объект времени (хранится как строка)
+        # если это строка то преобразуем в объект времени (хранится как строка)
         if isinstance(self.duration, str):
             try:
                 t = datetime.strptime(self.duration, "%H:%M:%S").time()
@@ -71,8 +73,9 @@ class Performance(models.Model):
         if t.hour == 0 and t.minute == 0:
             return "неизвестно"
         if t.hour == 0:
-            return f"{t.minute} минут"
-        return f"{t.hour} часов, {t.minute} минут"
+            return f"{t.minute} мин."
+        return f"{t.hour} ч, {t.minute} мин."
+
     @property
     def formatted_date(self):
         month_names = {
@@ -136,6 +139,7 @@ class Performance(models.Model):
     def comment_count(self):
         return self.comments.count()
 
+
 class Comment(models.Model):
     performance = models.ForeignKey(
         Performance, 
@@ -149,14 +153,17 @@ class Comment(models.Model):
         verbose_name="Автор"
     )
     text = models.TextField(verbose_name="Текст комментария")
+
     created_at = models.DateTimeField(
         default=timezone.now,
+        # auto_now=True,
         verbose_name="Дата создания"
     )
     updated_at = models.DateTimeField(
         default=timezone.now,
         verbose_name="Дата обновления"
-    )
+    )  
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Комментарий'
@@ -164,7 +171,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Комментарий от {self.author.username} к {self.performance.title}'
-
+    
     def save(self, *args, **kwargs):
         if not self.id:  # Если это новый комментарий
             self.created_at = timezone.now()
