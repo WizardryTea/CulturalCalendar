@@ -14,7 +14,7 @@ class PerformanceForm(forms.ModelForm):
             'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'description': forms.Textarea(attrs={'rows': 3}),
             'duration': forms.TextInput(attrs={
-                'placeholder': 'XX:MM:CC или оставьте пустым'
+                'placeholder': 'ЧЧ:MM:CC или оставьте пустым'
             }),
             'stage': forms.TextInput(attrs={
                 'placeholder': 'Сцена/Зал'
