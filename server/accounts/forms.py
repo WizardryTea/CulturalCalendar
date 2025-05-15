@@ -1,3 +1,4 @@
+# accounts/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser
@@ -25,7 +26,9 @@ class CustomUserCreationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.user_type = self.cleaned_data['user_type']
+        # user.user_type = self.cleaned_data['user_type']
+        # Добавим явное преобразование user_type к int в методе save():
+        user.user_type = int(self.cleaned_data['user_type'])  # преобразуем к int
         if commit:
             user.save()
         return user

@@ -2,15 +2,25 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, URLValidator, MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from datetime import datetime, time
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
+def validate_url(value):
+    validator = URLValidator()
+    try:
+        validator(value)
+    except ValidationError:
+        raise ValidationError(_('Введите корректный URL'))
 
 class Theater(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название театра")
-    website = models.URLField(verbose_name="Ссылка")
+    website = models.URLField(
+        verbose_name="Ссылка",
+        validators=[validate_url]
+    )
     description = models.TextField(blank=True, verbose_name="Описание")
     
     class Meta:
@@ -19,6 +29,10 @@ class Theater(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if self.website and not self.website.startswith(('http://', 'https://')):
+            raise ValidationError({'website': _('URL должен начинаться с http:// или https://')})
 
 
 class Performance(models.Model):
@@ -117,6 +131,10 @@ class Performance(models.Model):
     )
     min_age = models.PositiveIntegerField(
         default=12,
+        validators=[
+            MinValueValidator(0, message=_('Возраст не может быть отрицательным')),
+            MaxValueValidator(100, message=_('Возраст не может быть больше 100'))
+        ],
         verbose_name="Минимальный возраст"
     )
     is_premiere = models.BooleanField(
@@ -138,6 +156,14 @@ class Performance(models.Model):
     @property
     def comment_count(self):
         return self.comments.count()
+
+    def clean(self):
+        if self.genre not in dict(self.GENRE_CHOICES):
+            raise ValidationError({'genre': _('Выберите корректный жанр')})
+        if self.image_url and not self.image_url.startswith(('http://', 'https://')):
+            raise ValidationError({'image_url': _('URL должен начинаться с http:// или https://')})
+        if self.source_url and not self.source_url.startswith(('http://', 'https://')):
+            raise ValidationError({'source_url': _('URL должен начинаться с http:// или https://')})
 
 
 class Comment(models.Model):
